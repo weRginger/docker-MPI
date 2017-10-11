@@ -1,12 +1,23 @@
-## docker.openmpi
+## docker command
 
-Travis CI: [![Build Status](https://travis-ci.org/ocramz/docker.openmpi.svg?branch=master)](https://travis-ci.org/ocramz/docker.openmpi)
+Check docker IP
+
+```
+docker inspect -f '{{.Name}} - {{.NetworkSettings.IPAddress }}' $(docker ps -aq)
+```
+
+Run docker iteractively 
+
+```
+docker run -v /N0S1/nfs/:/workspace -ti novucaffe
+```
+
+## docker-MPI
 
 With the code in this repository, you can build a Docker container that provides 
 the OpenMPI runtime and tools along with various supporting libaries, 
 including the MPI4Py Python bindings. The container also runs an OpenSSH server
 so that multiple containers can be linked together and used via `mpirun`.
-
 
 ## MPI Container Cluster with `docker-compose`
 
@@ -32,7 +43,6 @@ The file defines an `mpi_head` and an `mpi_node`. Both containers run the same `
 The only difference is, that the `mpi_head` container exposes its SSH server to 
 the host system, so you can log into it to start your MPI applications.
 
-
 ## Usage
 
 The following command, run from the repository's directory, will start one `mpi_head` container and three `mpi_node` containers: 
@@ -57,7 +67,6 @@ Breaking the above command down:
 You can spin up a docker-compose cluster, run a battery of MPI4py tests and remove the cluster using a recipe provided in the included Makefile (handy for development):
 
     make main
-
 
 ## Credits
 
