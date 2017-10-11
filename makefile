@@ -1,6 +1,7 @@
 AUTH=ocramz
 NAME=docker-openmpi
-TAG=${AUTH}/${NAME}
+#TAG=${AUTH}/${NAME}
+TAG=mpi
 
 export NNODES=4
 

@@ -1,14 +1,19 @@
 mpi_head:
     build: .
-    # image: openmpi
+    # image: mpi
     ports: 
       - "22"
     links: 
       - mpi_node
-
+    volumes:
+      - /home/fan/docker.openmpi:/workspace
+    # command: tail -F anything
 mpi_node:
     build: .
-    # image: openmpi
+    # image: mpi
+    # command: tail -F anything
+    volumes:
+      - /home/fan/docker.openmpi:/workspace
 
 
 # version: "2"

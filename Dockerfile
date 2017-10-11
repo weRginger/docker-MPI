@@ -15,7 +15,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get update -y && \
     apt-get install -y --no-install-recommends sudo apt-utils && \
     apt-get install -y --no-install-recommends openssh-server \
-        python-dev python-numpy python-pip python-virtualenv python-scipy \
+        python-dev python-numpy python-pip python-virtualenv python-scipy vim make \
         gcc gfortran libopenmpi-dev openmpi-bin openmpi-common openmpi-doc binutils && \
     apt-get clean && apt-get purge && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -37,20 +37,26 @@ RUN adduser --disabled-password --gecos "" ${USER} && \
     echo "${USER} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 # ------------------------------------------------------------
-# Set-Up SSH with our Github deploy key
+# Set-Up SSH
 # ------------------------------------------------------------
+RUN ssh-keygen -q -t rsa -N '' -f /id_rsa
+COPY ./src/ssh/* /root/.ssh/
+RUN chmod 400 /root/.ssh/id_rsa
 
-ENV SSHDIR ${HOME}/.ssh/
+RUN mkdir -p ~/.ssh && touch ~/.ssh/authorized_keys
+RUN cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+RUN echo "    IdentityFile ~/.ssh/id_rsa" >> /etc/ssh/ssh_config
 
-RUN mkdir -p ${SSHDIR}
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+RUN sed -i 's/#   StrictHostKeyChecking ask/StrictHostKeyChecking no/g' /etc/ssh/ssh_config
 
-ADD ssh/config ${SSHDIR}/config
-ADD ssh/id_rsa.mpi ${SSHDIR}/id_rsa
-ADD ssh/id_rsa.mpi.pub ${SSHDIR}/id_rsa.pub
-ADD ssh/id_rsa.mpi.pub ${SSHDIR}/authorized_keys
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+RUN echo "export PATH=$PATH" >> /etc/profile
+RUN echo "ldconfig" >> /etc/profile
 
-RUN chmod -R 600 ${SSHDIR}* && \
-    chown -R ${USER}:${USER} ${SSHDIR}
+EXPOSE 22
 
 RUN pip install --upgrade pip \
     && pip install -U setuptools \
@@ -74,4 +80,6 @@ ADD mpi4py_benchmarks ${HOME}/mpi4py_benchmarks
 RUN chown -R ${USER}:${USER} ${HOME}/mpi4py_benchmarks
 
 EXPOSE 22
+# CMD ["/usr/sbin/sshd"]
 CMD ["/usr/sbin/sshd", "-D"]
+# CMD ["/bin/bash"]
