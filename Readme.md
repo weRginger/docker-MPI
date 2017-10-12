@@ -26,6 +26,7 @@ In one terminal
 ```
 docker-compose scale mpi_head=1 mpi_node=3
 docker-compose up --build
+```
 
 In another terminal
 
