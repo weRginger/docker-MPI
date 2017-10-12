@@ -19,6 +19,22 @@ the OpenMPI runtime and tools along with various supporting libaries,
 including the MPI4Py Python bindings. The container also runs an OpenSSH server
 so that multiple containers can be linked together and used via `mpirun`.
 
+## How to use (Ziqi)
+
+In one terminal
+
+```
+docker-compose scale mpi_head=1 mpi_node=3
+docker-compose up --build
+
+In another terminal
+
+```
+docker exec -ti dockeropenmpi_mpi_head_1 bash
+cd /workspace/docker-MPI/src
+mpirun --allow-run-as-root ./spawn_example
+```
+
 ## MPI Container Cluster with `docker-compose`
 
 While containers can in principle be started manually via `docker run`, we suggest that your use 

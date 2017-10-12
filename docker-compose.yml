@@ -6,14 +6,14 @@ mpi_head:
     links: 
       - mpi_node
     volumes:
-      - /home/fan/docker.openmpi:/workspace
+      - /home/fan/docker-MPI:/workspace
     # command: tail -F anything
 mpi_node:
     build: .
     # image: mpi
     # command: tail -F anything
     volumes:
-      - /home/fan/docker.openmpi:/workspace
+      - /home/fan/docker-MPI:/workspace
 
 
 # version: "2"
